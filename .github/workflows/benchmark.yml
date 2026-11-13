@@ -22,13 +22,20 @@ on:
         description: "Warm-up runs (not counted)"
         type: string
         default: "0"
+      suite:
+        description: "build = clean/incremental/Release builds; test = build-for-testing + unit tests"
+        type: choice
+        default: "build"
+        options:
+          - build
+          - test
 
 permissions:
   contents: read
 
 # One benchmark per runner label at a time in this repo (method: our builds never share a Mac).
 concurrency:
-  group: benchmark-${{ inputs.runner }}
+  group: benchmark-${{ inputs.runner }}-${{ inputs.suite }}
   cancel-in-progress: false
 
 jobs:
@@ -50,6 +57,20 @@ jobs:
       SIM_DEVICE_NAME: "iPhone 18 Pro"
       SIM_DESTINATION: "platform=iOS Simulator,name=iPhone 18 Pro,OS=latest"
       INCREMENTAL_TOUCH_FILE: "DuckDuckGo/Main/MainViewController.swift"
+      SPM_FORCE_DEBUG: ${{ inputs.suite == 'test' && '1' || '' }}
+      SKIP_TESTS: |
+        SyncUI-iOSTests/TurnOffSyncSheetViewTests
+        SyncUI-iOSTests/ScanQRCodeViewTests
+        SyncUI-iOSTests/SimplifiedConnectingSheetViewTests
+        SyncUI-iOSTests/SyncCodeSheetViewTests
+        SyncUI-iOSTests/EnterCodeTabViewTests
+        SyncUI-iOSTests/SimplifiedSyncSettingsViewTests
+        UnitTests/AIChatSyncPromoViewTests
+        UnitTests/SyncSuccessViewTests
+        UnitTests/VoiceSearchFeedbackViewTests
+        UnitTests/TabPreviewsSourceTests/testWhenUpdateFullScreenSnapshotThenItCanBeRetrieved
+        UnitTests/NetworkProtectionVPNLocationViewModelTests/test_onViewAppeared_loadedListIsSorted
+        UnitTests/AIChatContextualInputViewControllerTests/testWhenAskIsTappedWithTheDisclaimerOnScreenThenAButtonPromptIsReported
     steps:
       - name: Check out
         uses: actions/checkout@v4
@@ -67,11 +88,11 @@ jobs:
       - name: Prepare (not timed)
         run: bash "$RUNNER_TEMP/bench/prepare.sh"
       - name: Benchmark
-        run: bash "$RUNNER_TEMP/bench/run.sh"
+        run: bash "$RUNNER_TEMP/bench/${{ inputs.suite == 'test' && 'test.sh' || 'run.sh' }}"
       - name: Upload results
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: benchmark-${{ inputs.runner }}-${{ github.run_id }}
+          name: benchmark-${{ inputs.suite }}-${{ inputs.runner }}-${{ github.run_id }}
           path: ${{ runner.temp }}/bench-out
           if-no-files-found: warn
