@@ -8,7 +8,7 @@ COMMON=(-project "$XCODE_PROJECT" -scheme "$SCHEME" -destination "$SIM_DESTINATI
   -derivedDataPath "$DERIVED_DATA" -clonedSourcePackagesDirPath "$DERIVED_DATA/SourcePackages"
   -disableAutomaticPackageResolution -skipPackagePluginValidation -skipMacroValidation
   CODE_SIGN_IDENTITY=- CODE_SIGN_STYLE=Manual DEVELOPMENT_TEAM= PROVISIONING_PROFILE_SPECIFIER=
-  COMPILER_INDEX_STORE_ENABLE=NO)
+  COMPILER_INDEX_STORE_ENABLE=NO "${XCB_EXTRA[@]}")
 
 bench_timed() { # $1 = log, rest = command. Prints "<seconds> <exit code>"
   local log="$1"; shift; local start end rc xc

@@ -26,6 +26,10 @@ on:
         description: "Warm-up runs (not counted)"
         type: string
         default: "0"
+      xcodebuild_args:
+        description: "Tuning experiments: extra xcodebuild settings/flags, space-separated (empty = none)"
+        type: string
+        default: ""
       build_cache:
         description: "Enable Bitrise Build Cache (warm-up run fills the cache; measured runs read it)"
         type: boolean
@@ -59,6 +63,7 @@ jobs:
       MACHINE_KEY: ${{ inputs.runner }}
       BENCHMARK_RUNS: ${{ inputs.runs }}
       WARMUP_RUNS: ${{ inputs.warmup_runs }}
+      BENCH_XCB_ARGS: ${{ inputs.xcodebuild_args }}
       BENCHMARK_PROJECT: "DuckDuckGo-iOS"
       BENCH_REPO_URL: "https://github.com/duckduckgo/apple-browsers.git"
       BENCH_REF_NAME: "7.244.0+ios"
