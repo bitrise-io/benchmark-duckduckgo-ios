@@ -36,7 +36,7 @@ for i in $(seq 1 $(( WARMUP_RUNS + BENCHMARK_RUNS ))); do
     -derivedDataPath "$DERIVED_DATA" -clonedSourcePackagesDirPath "$DERIVED_DATA/SourcePackages" \
     -disableAutomaticPackageResolution -skipPackagePluginValidation -skipMacroValidation \
     CODE_SIGN_IDENTITY=- CODE_SIGN_STYLE=Manual DEVELOPMENT_TEAM= PROVISIONING_PROFILE_SPECIFIER= \
-    COMPILER_INDEX_STORE_ENABLE=NO DDG_SLOW_COMPILE_CHECK_THRESHOLD=250)
+    COMPILER_INDEX_STORE_ENABLE=NO DDG_SLOW_COMPILE_CHECK_THRESHOLD=250 "${XCB_EXTRA[@]}")
   if [ "$RC" -ne 0 ]; then echo "❌ build-for-testing failed on $LABEL"; tail -n 80 "$LOGS/$LABEL-build_for_testing_sim.log"; exit "$RC"; fi
   echo "build_for_testing_sim: ${S}s"
   echo "${BENCHMARK_PROJECT},build_for_testing_sim,${MACHINE_KEY},$LABEL,$S,0" >> "$BENCH_OUT/results.csv"

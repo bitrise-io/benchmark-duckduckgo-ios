@@ -36,7 +36,7 @@ for i in $(seq 1 $(( WARMUP_RUNS + BENCHMARK_RUNS ))); do
   reset_dd
   read -r S RC < <(bench_timed "$LOGS/$LABEL-clean_build_sim_debug.log" xcodebuild build "${COMMON[@]}" -configuration Debug)
   must clean_build_sim_debug "$LABEL" "$S" "$RC"
-  printf '\n// benchmark incremental change %s\n' "$LABEL" >> "$INCREMENTAL_TOUCH_FILE"
+  printf '\n// benchmark incremental change %s %s\n' "$LABEL" "${GITHUB_RUN_ID:-local}.${GITHUB_RUN_ATTEMPT:-1}" >> "$INCREMENTAL_TOUCH_FILE"
   read -r S RC < <(bench_timed "$LOGS/$LABEL-incremental_build_sim_debug.log" xcodebuild build "${COMMON[@]}" -configuration Debug)
   git checkout -- "$INCREMENTAL_TOUCH_FILE"
   must incremental_build_sim_debug "$LABEL" "$S" "$RC"
